@@ -1,0 +1,34 @@
+name: CI workflow  # 1. Identity: The name of this automation pipeline
+
+on:                # 2. Trigger: When should this robot wake up?
+  push:
+    branches: [ "main" ] # Run whenever code is PUSHED to the 'main' branch
+  pull_request:
+    branches: [ "main" ] # Run whenever someone opens a Pull Request to 'main'
+
+jobs:              # 3. The Job: What work needs to be done?
+  build:
+    runs-on: ubuntu-latest # 4. The Computer: Use a standard Linux server provided by GitHub
+    container: node:20-alpine # 5. The Environment: Use a lightweight Node.js v20 container (consistent with your course)
+
+    steps:
+    # Step A: Get the code
+    # Why: The robot starts with an empty hard drive. We must fetch your code first.
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    # Step B: Install the tools
+    # Why: Your app relies on external libraries. 'npm ci' installs them cleanly based exactly on package-lock.json.
+    - name: Install dependencies
+      run: npm ci
+
+    # Step C: Quality Check (Task 2 Requirement)
+    # Why: This checks for syntax errors or bad formatting (the "Grammar Police").
+    - name: Lint with ESLint
+      run: npm run lint
+
+    # Step D: Logic Check (Task 2 Requirement)
+    # Why: This runs your actual test files to prove the code works (the "Logic Police").
+    # We add --coverage to see how much of the code is actually tested.
+    - name: Run unit tests with Jest
+      run: npm test -- --coverage
