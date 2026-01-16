@@ -40,3 +40,23 @@ spec:
         rm -rf ./*
         rm -rf .[^.]* # Removes hidden files like .git
         echo "Successfully cleaned workspace."
+
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: eslint
+spec:
+  workspaces:
+    - name: source
+  steps:
+    - name: install-dependencies
+      image: node:18
+      workingDir: $(workspaces.source.path)
+      script: |
+        npm install
+    - name: run-eslint
+      image: node:18
+      workingDir: $(workspaces.source.path)
+      script: |
+        npx eslint .

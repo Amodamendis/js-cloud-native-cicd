@@ -32,3 +32,21 @@ spec:
         value: $(params.repo-url)
       - name: revision
         value: $(params.branch)
+      
+
+    #3. ESlint Task
+    - name: lint
+      workspaces:
+        - name: source
+          workspace: pipeline-workspace
+      taskRef:
+        name: eslint
+      params:
+        - name: image
+      value: "node:18-alpine"
+      - name: args
+        value: ["--format", "stylish", "--ext", ".js", "."]
+      runAfter:
+        - clone
+
+    # Note: The remaining tasks are unchanged
