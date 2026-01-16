@@ -19,16 +19,10 @@ spec:
         serviceAccountName: pipeline
         pipelineRef:
           name: cd-pipeline
-        # This workspace section is critical for the git-clone task to work
         workspaces:
           - name: pipeline-workspace
-            volumeClaimTemplate:
-              spec:
-                accessModes:
-                  - ReadWriteOnce
-                resources:
-                  requests:
-                    storage: 1Gi
+            persistentVolumeClaim:
+              claimName: pipelinerun-pvc  # <--- CHANGED: Points to your static PVC
         params:
           - name: repo-url
             value: $(tt.params.repository)
