@@ -1,19 +1,24 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: checkout
+  name: git-clone      
 spec:
+  workspaces:           
+    - name: output
+      description: The git repo will be cloned onto this volume
   params:
-    - name: repo-url
+    - name: url         
       description: The URL of the git repo to clone
       type: string
-    - name: branch
+    - name: revision    
       description: The branch to clone
       type: string
+      default: master
   steps:
-    - name: checkout
+    - name: clone
       image: bitnami/git:latest
-      command: [git]
-      args: ["clone", "--branch", "$(params.branch)", "$(params.repo-url)"]
-
-
+      workingDir: $(workspaces.output.path) 
+      script: |
+        # Clone into the current directory (workspace)
+        # We use '.' because workingDir is set to the workspace path
+        git clone --branch $(params.revision) $(params.url) .

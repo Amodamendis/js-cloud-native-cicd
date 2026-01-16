@@ -1,16 +1,4 @@
-apiVersion: triggers.tekton.dev/v1beta1
-kind: TriggerTemplate
-metadata:
-  name: cd-template
-spec:
-  params:
-    - name: repository
-      description: The git repo
-      default: " "
-    - name: branch
-      description: the branch for the git repo
-      default: master
-  resourcetemplates:
+resourcetemplates:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
@@ -19,6 +7,16 @@ spec:
         serviceAccountName: pipeline
         pipelineRef:
           name: cd-pipeline
+        # You must now provide the workspace
+        workspaces:
+          - name: pipeline-workspace
+            volumeClaimTemplate:
+              spec:
+                accessModes:
+                  - ReadWriteOnce
+                resources:
+                  requests:
+                    storage: 1Gi
         params:
           - name: repo-url
             value: $(tt.params.repository)
