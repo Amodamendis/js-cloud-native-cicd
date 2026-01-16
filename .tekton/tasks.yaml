@@ -22,3 +22,21 @@ spec:
         # Clone into the current directory (workspace)
         # We use '.' because workingDir is set to the workspace path
         git clone --branch $(params.revision) $(params.url) .
+
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: cleanup
+spec:
+  workspaces:
+    - name: output
+  steps:
+    - name: clean
+      image: alpine:3.12
+      workingDir: $(workspaces.output.path)
+      script: |
+        echo "Cleaning up workspace..."
+        rm -rf ./*
+        rm -rf .[^.]* # Removes hidden files like .git
+        echo "Successfully cleaned workspace."
