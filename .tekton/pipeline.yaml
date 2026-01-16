@@ -42,3 +42,15 @@ spec:
         name: eslint
       runAfter:
         - clone
+    
+    - name: tests
+      workspaces:
+        - name: source
+          workspace: pipeline-workspace
+      taskRef:
+        name: jest
+      params:
+      - name: args
+        value: "--verbose --coverage"
+      runAfter:
+        - lint
