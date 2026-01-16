@@ -1,26 +1,21 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: git-clone      
+  name: git-clone
 spec:
-  workspaces:           
+  workspaces:
     - name: output
-      description: The git repo will be cloned onto this volume
   params:
-    - name: url         
-      description: The URL of the git repo to clone
+    - name: url
       type: string
-    - name: revision    
-      description: The branch to clone
+    - name: revision
       type: string
       default: master
   steps:
     - name: clone
       image: bitnami/git:latest
-      workingDir: $(workspaces.output.path) 
+      workingDir: $(workspaces.output.path)
       script: |
-        # Clone into the current directory (workspace)
-        # We use '.' because workingDir is set to the workspace path
         git clone --branch $(params.revision) $(params.url) .
 
 ---
@@ -38,7 +33,7 @@ spec:
       script: |
         echo "Cleaning up workspace..."
         rm -rf ./*
-        rm -rf .[^.]* # Removes hidden files like .git
+        rm -rf .[^.]*
         echo "Successfully cleaned workspace."
 
 ---
@@ -50,13 +45,12 @@ spec:
   workspaces:
     - name: source
   steps:
-    - name: install-dependencies
+    - name: run-lint
       image: node:18
       workingDir: $(workspaces.source.path)
       script: |
-        npm install
-    - name: run-eslint
-      image: node:18
-      workingDir: $(workspaces.source.path)
-      script: |
-        npx eslint .
+        # Install dependencies
+        npm ci
+        
+        # Run the lint script defined in package.json
+        npm run lint

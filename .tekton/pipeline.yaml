@@ -10,7 +10,7 @@ spec:
     - name: branch
       default: "master"
   tasks:
-    # 1. CLEANUP TASK (Runs first)
+    # 1. CLEANUP TASK
     - name: cleanup
       workspaces:
         - name: output
@@ -18,7 +18,7 @@ spec:
       taskRef:
         name: cleanup
 
-    # 2. CLONE TASK (Runs after cleanup)
+    # 2. CLONE TASK
     - name: clone
       workspaces:
         - name: output
@@ -26,27 +26,19 @@ spec:
       taskRef:
         name: git-clone
       runAfter:
-        - cleanup  # This ensures it waits for cleanup to finish
+        - cleanup
       params:
       - name: url
         value: $(params.repo-url)
       - name: revision
         value: $(params.branch)
-      
 
-    #3. ESlint Task
+    # 3. ESLINT TASK (FIXED)
     - name: lint
       workspaces:
         - name: source
           workspace: pipeline-workspace
       taskRef:
         name: eslint
-      params:
-        - name: image
-      value: "node:18-alpine"
-      - name: args
-        value: ["--format", "stylish", "--ext", ".js", "."]
       runAfter:
         - clone
-
-    # Note: The remaining tasks are unchanged
