@@ -43,6 +43,7 @@ spec:
       runAfter:
         - clone
     
+    # 4.JEST task 
     - name: tests
       workspaces:
         - name: source
@@ -54,3 +55,19 @@ spec:
         value: "--verbose --coverage"
       runAfter:
         - lint
+
+    # 5.building an image
+    - name: build
+      workspaces:
+        - name: source
+          workspace: pipeline-workspace
+      taskRef:
+        name: buildah
+        kind: ClusterTask
+      params:
+      - name: IMAGE
+        value: "$(params.build-image)"
+      runAfter:
+        - tests
+
+      
