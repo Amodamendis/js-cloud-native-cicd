@@ -9,6 +9,7 @@ spec:
     - name: repo-url
     - name: branch
       default: "master"
+    - name: build-image
   tasks:
     # 1. CLEANUP TASK
     - name: cleanup
@@ -70,4 +71,4 @@ spec:
       runAfter:
         - tests
 
-      
+    
