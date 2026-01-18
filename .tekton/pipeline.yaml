@@ -6,6 +6,7 @@ spec:
   workspaces:
     - name: pipeline-workspace
   params:
+    - name: app-name
     - name: repo-url
     - name: branch
       default: "master"
@@ -71,4 +72,13 @@ spec:
       runAfter:
         - tests
 
-    
+    # 6.Deploying in openshift-cluster
+    - name: deploy
+      taskRef:
+        name: openshift-client
+        kind: ClusterTask
+      params:
+      - name: SCRIPT
+        value: "oc create deploy $(params.app-name) --image=$(params.build-image)"
+      runAfter:
+        - build
