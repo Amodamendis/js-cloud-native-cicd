@@ -10,10 +10,9 @@ spec:
     - name: branch
       description: the branch for the git repo
       default: master
-    # Added app-name so you can pass it to the pipeline
-    - name: app-name 
+    - name: app-name
       description: The name of the application
-      default: "tekton-lab" 
+      default: "tekton-lab"
   resourcetemplates:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
@@ -34,6 +33,6 @@ spec:
             value: $(tt.params.branch)
           - name: app-name
             value: $(tt.params.app-name)
-          # FIX: Construct the full image URL using the current namespace
           - name: build-image
-            value: image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/$(tt.params.app-name):latest
+            # HERE IS THE FIX: Explicitly using your project name
+            value: image-registry.openshift-image-registry.svc:5000/sn-labs-amodaaws/$(tt.params.app-name):latest
