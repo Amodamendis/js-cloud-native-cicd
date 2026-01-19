@@ -81,13 +81,14 @@ spec:
       - name: SCRIPT
         value: |
           # Check if deployment exists
-          if oc get deploy $(params.app-name); then
-            echo "Deployment exists. Updating image..."
-            oc set image deploy/$(params.app-name) $(params.app-name)=$(params.build-image)
+          if oc get deploy $(params.app-name) > /dev/null 2>&1; then
+            echo "Deployment $(params.app-name) exists. Updating image..."
+            # FIX: Use '*' to update the image on ALL containers in the pod
+            # This prevents errors if the container name doesn't match the deployment name
+            oc set image deploy/$(params.app-name) "*=$(params.build-image)"
           else
-            echo "Deployment does not exist. Creating..."
+            echo "Deployment $(params.app-name) does not exist. Creating..."
             oc create deploy $(params.app-name) --image=$(params.build-image)
           fi
       runAfter:
         - build
-        
