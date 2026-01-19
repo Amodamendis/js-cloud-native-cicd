@@ -79,6 +79,15 @@ spec:
         kind: ClusterTask
       params:
       - name: SCRIPT
-        value: "oc create deploy $(params.app-name) --image=$(params.build-image)"
+        value: |
+          # Check if deployment exists
+          if oc get deploy $(params.app-name); then
+            echo "Deployment exists. Updating image..."
+            oc set image deploy/$(params.app-name) $(params.app-name)=$(params.build-image)
+          else
+            echo "Deployment does not exist. Creating..."
+            oc create deploy $(params.app-name) --image=$(params.build-image)
+          fi
       runAfter:
         - build
+        
