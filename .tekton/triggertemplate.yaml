@@ -9,7 +9,7 @@ spec:
       default: " "
     - name: branch
       description: the branch for the git repo
-      default: master
+      default: main
     - name: app-name
       description: The name of the application
       default: "tekton-lab"
